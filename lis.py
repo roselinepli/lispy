@@ -5,18 +5,11 @@ List   = list             # A Scheme List is implemented as a Python list
 Exp    = (Atom, List)     # A Scheme expression is an Atom or List
 Env    = dict             # A Scheme environment (defined below) 
                           # is a mapping of {variable: value}
-                          
+
 
 def tokenize(chars:str) -> list:
     """Convert a string of characters into a list of tokens."""
     return chars.replace('(', ' ( ').replace(')', ' ) ').split()
-
-
-def test_tokenize():
-    program = "(begin (define r 10) (* pi (* r r)))"
-    expected = ['(', 'begin', '(', 'define', 'r', '10', ')', '(', '*', 'pi', '(', '*', 'r', 'r', ')', ')', ')']
-    actual = tokenize(program)
-    assert actual == expected, f"expected\n  {expected}\nbut got\n {actual}"
 
 
 def parse(program: str):
@@ -106,6 +99,13 @@ def eval(x: Exp, env=global_env) -> Exp:
         proc = eval(x[0], env)
         args = [eval(arg, env) for arg in x[1:]]
         return proc(*args)
+
+
+def test_tokenize():
+    program = "(begin (define r 10) (* pi (* r r)))"
+    expected = ['(', 'begin', '(', 'define', 'r', '10', ')', '(', '*', 'pi', '(', '*', 'r', 'r', ')', ')', ')']
+    actual = tokenize(program)
+    assert actual == expected, f"expected\n  {expected}\nbut got\n {actual}"
 
 
 if __name__=='__main__': 
