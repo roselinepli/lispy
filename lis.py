@@ -100,6 +100,20 @@ def eval(x: Exp, env=global_env) -> Exp:
         args = [eval(arg, env) for arg in x[1:]]
         return proc(*args)
 
+def repl(prompt='lis.py> '):
+    """A prompt-read-eavl-print loop."""
+    while True:
+        val = eval(parse(input(prompt)))
+        if val is not None:
+            print(schemestr(val))
+
+def schemestr(exp):
+    """Convert a Python object back into a Scheme-readable string."""
+    if isinstance(exp, List):
+        return '(' + ' '.join(map(schemestr, exp)) + ')'
+    else:
+        return str(exp)
+
 
 def test_tokenize():
     program = "(begin (define r 10) (* pi (* r r)))"
@@ -110,3 +124,4 @@ def test_tokenize():
 
 if __name__=='__main__': 
     test_tokenize()
+    repl()
