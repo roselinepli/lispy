@@ -24,8 +24,10 @@ def read_from_tokens(tokens: list):
     token = tokens.pop(0)
     if token == '(':
         L = [ ]
-        while tokens[0] != ')':
+        while tokens and tokens[0] != ')':
             L.append(read_from_tokens(tokens))
+        if not tokens:
+            raise SyntaxError('mismatched ( and )')
         tokens.pop(0) 
         return L
     elif token == ')':
@@ -115,6 +117,49 @@ def schemestr(exp):
         return str(exp)
 
 
+class Env(dict):
+    """An environment: a dict of {'val': val} pairs, with an outer Env."""
+    def __init__(self, parms=(), args=(), outer=None):
+        self.update(zip(parms, args))
+        self.outer = outer
+    def find(self, var):
+        """Find the innermost Env where var appears."""
+        return self if (var in self) else self.outer.find(var)
+
+class Procedure(object):
+    """A user-defined Scheme procedure."""
+    def __init__(self, parms, body, env):
+        self.parms, self.body, self.env = parms, body, env
+    def __call__(self, *args):
+        return eval(self.body, Env(self.parms, args, self.env))
+
+global_env = standard_env()
+
+def eval(x, env=global_env):
+    """Evaluate an expression in an environment."""
+    if isinstance(x, Symbol):
+        return env.find(x)[x]
+    elif not isinstance(x, List):
+        return x
+    op, *args = x
+    if op == 'quote':
+        return args[0]
+    elif op == 'if':
+        (test, conseq, alt) = args
+        exp = (conseq if eval(test, env) else alt)
+        return eval(exp, env)
+    elif op == 'set!':
+        (symbol, exp) = args
+        env.find(symbol)[symbol] = eval(exp, env)
+    elif op == 'lambda':
+        (parms, body) = args
+        return Procedure(parms, body, env)
+    else:
+        proc = eval(op, env)
+        vals = [eval(arg, env) for arg in args]
+        return proc(*vals)
+
+
 def test_tokenize():
     program = "(begin (define r 10) (* pi (* r r)))"
     expected = ['(', 'begin', '(', 'define', 'r', '10', ')', '(', '*', 'pi', '(', '*', 'r', 'r', ')', ')', ')']
@@ -122,6 +167,12 @@ def test_tokenize():
     assert actual == expected, f"expected\n  {expected}\nbut got\n {actual}"
 
 
+def debug_lambda():
+    program = "(define circle-area (lambda (r) (* pi (* r r))))"
+    print(eval(parse(program)))
+
+
 if __name__=='__main__': 
-    test_tokenize()
+    # test_tokenize()
+    # debug_lambda()
     repl()
