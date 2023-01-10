@@ -3,7 +3,7 @@ Number = (int, float)     # A Scheme Number is implemented as a Python int or fl
 Atom   = (Symbol, Number) # A Scheme Atom is a Symbol or Number
 List   = list             # A Scheme List is implemented as a Python list
 Exp    = (Atom, List)     # A Scheme expression is an Atom or List
-Env    = dict             # A Scheme environment (defined below) 
+Env    = dict             # A Scheme environment (defined below)
                           # is a mapping of {variable: value}
 
 
@@ -28,7 +28,7 @@ def read_from_tokens(tokens: list):
             L.append(read_from_tokens(tokens))
         if not tokens:
             raise SyntaxError('mismatched ( and )')
-        tokens.pop(0) 
+        tokens.pop(0)
         return L
     elif token == ')':
         raise SyntaxError('unexpected )')
@@ -53,27 +53,27 @@ def standard_env() -> Env:
     env = Env()
     env.update(vars(math)) # sin, cos, sqrt, pi, ...
     env.update({
-        '+':op.add, '-':op.sub, '*':op.mul, '/':op.truediv, 
-        '>':op.gt, '<':op.lt, '>=':op.ge, '<=':op.le, '=':op.eq, 
+        '+':op.add, '-':op.sub, '*':op.mul, '/':op.truediv,
+        '>':op.gt, '<':op.lt, '>=':op.ge, '<=':op.le, '=':op.eq,
         'abs':     abs,
-        'append':  op.add,  
+        'append':  op.add,
         'apply':   lambda proc, args: proc(*args),
         'begin':   lambda *x: x[-1],
         'car':     lambda x: x[0],
-        'cdr':     lambda x: x[1:], 
+        'cdr':     lambda x: x[1:],
         'cons':    lambda x,y: [x] + y,
-        'eq?':     op.is_, 
+        'eq?':     op.is_,
         'expt':    pow,
-        'equal?':  op.eq, 
-        'length':  len, 
-        'list':    lambda *x: List(x), 
-        'list?':   lambda x: isinstance(x, List), 
+        'equal?':  op.eq,
+        'length':  len,
+        'list':    lambda *x: List(x),
+        'list?':   lambda x: isinstance(x, List),
         'map':     map,
         'max':     max,
         'min':     min,
         'not':     op.not_,
-        'null?':   lambda x: x == [], 
-        'number?': lambda x: isinstance(x, Number),  
+        'null?':   lambda x: x == [],
+        'number?': lambda x: isinstance(x, Number),
 		'print':   print,
         'procedure?': callable,
         'round':   round,
@@ -127,8 +127,8 @@ class Env(dict):
         try:
             return self if (var in self) else self.outer.find(var)
         except AttributeError:
-            raise Exception(f"cannot find '{var}'") 
-       
+            raise Exception(f"cannot find '{var}'")
+
 
 class Procedure(object):
     """A user-defined Scheme procedure."""
@@ -179,7 +179,7 @@ def debug_lambda():
     print(eval(parse(program)))
 
 
-if __name__=='__main__': 
+if __name__=='__main__':
     # test_tokenize()
     debug_lambda()
     # repl()
