@@ -124,7 +124,11 @@ class Env(dict):
         self.outer = outer
     def find(self, var):
         """Find the innermost Env where var appears."""
-        return self if (var in self) else self.outer.find(var)
+        try:
+            return self if (var in self) else self.outer.find(var)
+        except AttributeError:
+            raise Exception(f"cannot find '{var}'") 
+       
 
 class Procedure(object):
     """A user-defined Scheme procedure."""
@@ -148,6 +152,9 @@ def eval(x, env=global_env):
         (test, conseq, alt) = args
         exp = (conseq if eval(test, env) else alt)
         return eval(exp, env)
+    elif x[0] == 'define':
+        (_, symbol, exp) = x
+        env[symbol] = eval(exp, env)
     elif op == 'set!':
         (symbol, exp) = args
         env.find(symbol)[symbol] = eval(exp, env)
@@ -174,5 +181,5 @@ def debug_lambda():
 
 if __name__=='__main__': 
     # test_tokenize()
-    # debug_lambda()
-    repl()
+    debug_lambda()
+    # repl()
