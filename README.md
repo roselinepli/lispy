@@ -1,13 +1,8 @@
-## Introduction
+## A Lispy Interpreter Written by Python
 
-Implementing Peter Norvig's lisp interpreter https://norvig.com/lispy.html
+<img src="./lispy.png" alt="lispy" height="300" width="600" />
 
-## Dev
+This was the very first project I undertook, and I found it incredibly helpful in enhancing my 
+understanding of programming languages and how computers process code.
 
-```
-git st
-git diff
-git add
-git ci
-git push origin main
-```
+<a href="https://norvig.com/lispy.html">Original link</a> by Peter Norvig.
